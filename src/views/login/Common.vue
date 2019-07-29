@@ -8,7 +8,8 @@
         </div>
         <div class="desc"></div>
       </div>
-      <component :is="componentName" @regist="handleRegist" class="main-content"></component>
+<!--      <component :is="componentName" @regist="handleRegist" class="main-content"></component>-->
+      <component :is="componentName" class="main-content"></component>
     </div>
     <global-footer :copyright="copyright" />
   </div>
@@ -36,9 +37,9 @@ export default {
     }
   },
   methods: {
-    handleRegist (val) {
-      this.componentName = val
-    }
+    // handleRegist (val) {
+    //   this.componentName = val
+    // }
   }
 }
 </script>
