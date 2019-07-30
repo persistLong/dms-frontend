@@ -76,7 +76,6 @@
 import RangeDate from '@/components/datetime/RangeDate'
 import DeptAdd from './DeptAdd'
 import DeptEdit from './DeptEdit'
-
 export default {
   name: 'Dept',
   components: {DeptAdd, DeptEdit, RangeDate},
@@ -247,5 +246,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "../../../../static/less/Common";
+  @import "../../../../static/less/Common";
 </style>
