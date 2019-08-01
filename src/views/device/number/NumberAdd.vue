@@ -250,14 +250,16 @@ export default {
     },
     handleGuaranteeDateChange (value, dateStr) {
       if (value) {
-        this.number.guaranteeTime = value.valueOf()
+        var date = new Date(dateStr)
+        this.number.guaranteeTime = date
         console.log(this.number.guaranteeTime)
         // this.queryParams.createTimeTo = value[1]
       }
     },
     handleSalesDateChange (value, dateStr) {
       if (value) {
-        this.number.salesTime = value.valueOf()
+        var date = new Date(dateStr)
+        this.number.salesTime = date
         console.log(this.number.salesTime)
         // this.queryParams.createTimeTo = value[1]
       }
