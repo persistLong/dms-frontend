@@ -6,31 +6,31 @@
     placement="right"
     :closable="false"
     @close="onClose"
-    :visible="categoryEditVisiable"
+    :visible="numberEditVisiable"
     style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
     <a-form :form="form">
       <a-form-item label='部门名称' v-bind="formItemLayout">
-        <a-input v-decorator="['categoryName',
+        <a-input v-decorator="['numberName',
                    {rules: [
                     { required: true, message: '部门名称不能为空'},
                     { max: 20, message: '长度不能超过20个字符'}
                   ]}]"/>
       </a-form-item>
-      <a-form-item label='部门排序' v-bind="formItemLayout">
-        <a-input-number v-decorator="['orderNum']" style="width: 100%"/>
-      </a-form-item>
+<!--      <a-form-item label='部门排序' v-bind="formItemLayout">-->
+<!--        <a-input-number v-decorator="['orderNum']" style="width: 100%"/>-->
+<!--      </a-form-item>-->
       <a-form-item label='上级部门'
                    style="margin-bottom: 2rem"
                    v-bind="formItemLayout">
         <a-tree
-          :key="categoryTreeKey"
+          :key="numberTreeKey"
           :checkable="true"
           :checkStrictly="true"
           @check="handleCheck"
           @expand="handleExpand"
           :expandedKeys="expandedKeys"
           :defaultCheckedKeys="defaultCheckedKeys"
-          :treeData="categoryTreeData">
+          :treeData="numberTreeData">
         </a-tree>
       </a-form-item>
     </a-form>
@@ -45,13 +45,13 @@
 
 <script>
 const formItemLayout = {
-  labelCol: { span: 3 },
-  wrapperCol: { span: 18 }
+  labelCol: { span: 5 },
+  wrapperCol: { span: 15 }
 }
 export default {
-  name: 'CategoryEdit',
+  name: 'NumberEdit',
   props: {
-    categoryEditVisiable: {
+    numberEditVisiable: {
       default: false
     }
   },
@@ -60,18 +60,18 @@ export default {
       loading: false,
       formItemLayout,
       form: this.$form.createForm(this),
-      categoryTreeKey: +new Date(),
-      category: {},
+      numberTreeKey: +new Date(),
+      number: {},
       checkedKeys: [],
       expandedKeys: [],
       defaultCheckedKeys: [],
-      categoryTreeData: []
+      numberTreeData: []
     }
   },
   methods: {
     reset () {
       this.loading = false
-      this.categoryTreeKey = +new Date()
+      this.numberTreeKey = +new Date()
       this.expandedKeys = this.checkedKeys = this.defaultCheckedKeys = []
       this.button = {}
       this.form.resetFields()
@@ -86,39 +86,39 @@ export default {
     handleExpand (expandedKeys) {
       this.expandedKeys = expandedKeys
     },
-    setFormValues ({...category}) {
-      this.form.getFieldDecorator('categoryName')
-      this.form.setFieldsValue({'categoryName': category.text})
+    setFormValues ({...number}) {
+      this.form.getFieldDecorator('numberName')
+      this.form.setFieldsValue({'numberName': number.text})
       this.form.getFieldDecorator('orderNum')
-      this.form.setFieldsValue({'orderNum': category.order})
-      if (category.parentId !== '0') {
-        this.defaultCheckedKeys.push(category.parentId)
+      this.form.setFieldsValue({'orderNum': number.order})
+      if (number.parentId !== '0') {
+        this.defaultCheckedKeys.push(number.parentId)
         this.checkedKeys = this.defaultCheckedKeys
         this.expandedKeys = this.checkedKeys
       }
-      this.category.categoryId = category.id
+      this.number.numberId = number.id
     },
     handleSubmit () {
       let checkedArr = Object.is(this.checkedKeys.checked, undefined) ? this.checkedKeys : this.checkedKeys.checked
       if (checkedArr.length > 1) {
-        this.$message.error('最多只能选择一个上级类别，请修改')
+        this.$message.error('最多只能选择一个上级部门，请修改')
         return
       }
-      if (checkedArr[0] === this.category.categoryId) {
-        this.$message.error('不能选择自己作为上级类别，请修改')
+      if (checkedArr[0] === this.number.numberId) {
+        this.$message.error('不能选择自己作为上级部门，请修改')
         return
       }
       this.form.validateFields((err, values) => {
         if (!err) {
           this.loading = true
-          let category = this.form.getFieldsValue()
-          category.parentId = checkedArr[0]
-          if (Object.is(category.parentId, undefined)) {
-            category.parentId = 0
+          let number = this.form.getFieldsValue()
+          number.parentId = checkedArr[0]
+          if (Object.is(number.parentId, undefined)) {
+            number.parentId = 0
           }
-          category.categoryId = this.category.categoryId
-          this.$put('category', {
-            ...category
+          number.numberId = this.number.numberId
+          this.$put('number', {
+            ...number
           }).then(() => {
             this.reset()
             this.$emit('success')
@@ -130,11 +130,11 @@ export default {
     }
   },
   watch: {
-    categoryEditVisiable () {
-      if (this.categoryEditVisiable) {
-        this.$get('category').then((r) => {
-          this.categoryTreeData = r.data.rows.children
-          this.categoryTreeKey = +new Date()
+    numberEditVisiable () {
+      if (this.numberEditVisiable) {
+        this.$get('number').then((r) => {
+          this.numberTreeData = r.data.rows.children
+          this.numberTreeKey = +new Date()
         })
       }
     }

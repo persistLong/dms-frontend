@@ -19,6 +19,8 @@ let FEBS_REQUEST = axios.create({
 FEBS_REQUEST.interceptors.request.use((config) => {
   let expireTime = store.state.account.expireTime
   let now = moment().format('YYYYMMDDHHmmss')
+  console.log('expireTime ', expireTime, ' now ', now)
+  console.log(now - expireTime)
   // 让token早10秒种过期，提升“请重新登录”弹窗体验
   if (now - expireTime >= -10) {
     Modal.error({

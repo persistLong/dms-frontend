@@ -6,13 +6,13 @@
     placement="right"
     :closable="false"
     @close="onClose"
-    :visible="categoryEditVisiable"
+    :visible="companyEditVisiable"
     style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
     <a-form :form="form">
-      <a-form-item label='部门名称' v-bind="formItemLayout">
-        <a-input v-decorator="['categoryName',
+      <a-form-item label='组织名称' v-bind="formItemLayout">
+        <a-input v-decorator="['companyName',
                    {rules: [
-                    { required: true, message: '部门名称不能为空'},
+                    { required: true, message: '组织名称不能为空'},
                     { max: 20, message: '长度不能超过20个字符'}
                   ]}]"/>
       </a-form-item>
@@ -23,14 +23,14 @@
                    style="margin-bottom: 2rem"
                    v-bind="formItemLayout">
         <a-tree
-          :key="categoryTreeKey"
+          :key="companyTreeKey"
           :checkable="true"
           :checkStrictly="true"
           @check="handleCheck"
           @expand="handleExpand"
           :expandedKeys="expandedKeys"
           :defaultCheckedKeys="defaultCheckedKeys"
-          :treeData="categoryTreeData">
+          :treeData="companyTreeData">
         </a-tree>
       </a-form-item>
     </a-form>
@@ -49,9 +49,9 @@ const formItemLayout = {
   wrapperCol: { span: 18 }
 }
 export default {
-  name: 'CategoryEdit',
+  name: 'companyEdit',
   props: {
-    categoryEditVisiable: {
+    companyEditVisiable: {
       default: false
     }
   },
@@ -60,18 +60,18 @@ export default {
       loading: false,
       formItemLayout,
       form: this.$form.createForm(this),
-      categoryTreeKey: +new Date(),
-      category: {},
+      companyTreeKey: +new Date(),
+      company: {},
       checkedKeys: [],
       expandedKeys: [],
       defaultCheckedKeys: [],
-      categoryTreeData: []
+      companyTreeData: []
     }
   },
   methods: {
     reset () {
       this.loading = false
-      this.categoryTreeKey = +new Date()
+      this.companyTreeKey = +new Date()
       this.expandedKeys = this.checkedKeys = this.defaultCheckedKeys = []
       this.button = {}
       this.form.resetFields()
@@ -86,39 +86,39 @@ export default {
     handleExpand (expandedKeys) {
       this.expandedKeys = expandedKeys
     },
-    setFormValues ({...category}) {
-      this.form.getFieldDecorator('categoryName')
-      this.form.setFieldsValue({'categoryName': category.text})
+    setFormValues ({...company}) {
+      this.form.getFieldDecorator('companyName')
+      this.form.setFieldsValue({'companyName': company.text})
       this.form.getFieldDecorator('orderNum')
-      this.form.setFieldsValue({'orderNum': category.order})
-      if (category.parentId !== '0') {
-        this.defaultCheckedKeys.push(category.parentId)
+      this.form.setFieldsValue({'orderNum': company.order})
+      if (company.parentId !== '0') {
+        this.defaultCheckedKeys.push(company.parentId)
         this.checkedKeys = this.defaultCheckedKeys
         this.expandedKeys = this.checkedKeys
       }
-      this.category.categoryId = category.id
+      this.company.companyId = company.id
     },
     handleSubmit () {
       let checkedArr = Object.is(this.checkedKeys.checked, undefined) ? this.checkedKeys : this.checkedKeys.checked
       if (checkedArr.length > 1) {
-        this.$message.error('最多只能选择一个上级类别，请修改')
+        this.$message.error('最多只能选择一个上级部门，请修改')
         return
       }
-      if (checkedArr[0] === this.category.categoryId) {
-        this.$message.error('不能选择自己作为上级类别，请修改')
+      if (checkedArr[0] === this.company.companyId) {
+        this.$message.error('不能选择自己作为上级部门，请修改')
         return
       }
       this.form.validateFields((err, values) => {
         if (!err) {
           this.loading = true
-          let category = this.form.getFieldsValue()
-          category.parentId = checkedArr[0]
-          if (Object.is(category.parentId, undefined)) {
-            category.parentId = 0
+          let company = this.form.getFieldsValue()
+          company.parentId = checkedArr[0]
+          if (Object.is(company.parentId, undefined)) {
+            company.parentId = 0
           }
-          category.categoryId = this.category.categoryId
-          this.$put('category', {
-            ...category
+          company.companyId = this.company.companyId
+          this.$put('company', {
+            ...company
           }).then(() => {
             this.reset()
             this.$emit('success')
@@ -130,11 +130,11 @@ export default {
     }
   },
   watch: {
-    categoryEditVisiable () {
-      if (this.categoryEditVisiable) {
-        this.$get('category').then((r) => {
-          this.categoryTreeData = r.data.rows.children
-          this.categoryTreeKey = +new Date()
+    companyEditVisiable () {
+      if (this.companyEditVisiable) {
+        this.$get('company').then((r) => {
+          this.companyTreeData = r.data.rows.children
+          this.companyTreeKey = +new Date()
         })
       }
     }

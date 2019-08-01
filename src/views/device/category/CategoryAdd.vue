@@ -9,18 +9,18 @@
     :visible="categoryAddVisiable"
     style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
     <a-form :form="form">
-      <a-form-item label='终端名称' v-bind="formItemLayout">
+      <a-form-item label='类别名称' v-bind="formItemLayout">
         <a-input v-model="category.categoryName"
                  v-decorator="['categoryName',
                    {rules: [
-                    { required: true, message: '终端名称不能为空'},
+                    { required: true, message: '类别名称不能为空'},
                     { max: 20, message: '长度不能超过20个字符'}
                   ]}]"/>
       </a-form-item>
-      <a-form-item label='终端排序' v-bind="formItemLayout">
+      <a-form-item label='类别排序' v-bind="formItemLayout">
         <a-input-number v-model="category.orderNum" style="width: 100%"/>
       </a-form-item>
-      <a-form-item label='上级终端'
+      <a-form-item label='上级类别'
                    style="margin-bottom: 2rem"
                    v-bind="formItemLayout">
         <a-tree
@@ -88,7 +88,7 @@ export default {
     handleSubmit () {
       let checkedArr = Object.is(this.checkedKeys.checked, undefined) ? this.checkedKeys : this.checkedKeys.checked
       if (checkedArr.length > 1) {
-        this.$message.error('最多只能选择一个上级部门，请修改')
+        this.$message.error('最多只能选择一个上级类别，请修改')
         return
       }
       this.form.validateFields((err, values) => {

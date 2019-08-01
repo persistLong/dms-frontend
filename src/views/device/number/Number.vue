@@ -7,40 +7,40 @@
           <a-row >
             <a-col :md="12" :sm="24" >
               <a-form-item
-                label="名称"
+                label="设备编号"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.categoryName"/>
+                <a-input v-model="queryParams.numberName"/>
               </a-form-item>
             </a-col>
             <span style="float: right; margin-top: 3px;">
               <a-button type="primary" @click="search">查询</a-button>
               <a-button style="margin-left: 8px" @click="reset">重置</a-button>
             </span>
-<!--            <a-col :md="12" :sm="24" >-->
-<!--              <a-form-item-->
-<!--                label="创建时间"-->
-<!--                :labelCol="{span: 5}"-->
-<!--                :wrapperCol="{span: 18, offset: 1}">-->
-<!--                <range-date @change="handleDateChange" ref="createTime"></range-date>-->
-<!--              </a-form-item>-->
-<!--            </a-col>-->
+            <!--            <a-col :md="12" :sm="24" >-->
+            <!--              <a-form-item-->
+            <!--                label="创建时间"-->
+            <!--                :labelCol="{span: 5}"-->
+            <!--                :wrapperCol="{span: 18, offset: 1}">-->
+            <!--                <range-date @change="handleDateChange" ref="createTime"></range-date>-->
+            <!--              </a-form-item>-->
+            <!--            </a-col>-->
           </a-row>
         </div>
       </a-form>
     </div>
     <div>
       <div class="operator" >
-        <a-button v-hasPermission="'category:add'" type="primary" ghost @click="add">新增</a-button>
-        <a-button v-hasPermission="'category:delete'" @click="batchDelete">删除</a-button>
-<!--        <a-dropdown v-hasPermission="'category:export'">-->
-<!--          <a-menu slot="overlay">-->
-<!--            <a-menu-item key="export-data" @click="exportExcel">导出Excel</a-menu-item>-->
-<!--          </a-menu>-->
-<!--          <a-button>-->
-<!--            更多操作 <a-icon type="down" />-->
-<!--          </a-button>-->
-<!--        </a-dropdown>-->
+        <a-button v-hasPermission="'number:add'" type="primary" ghost @click="add">新增</a-button>
+        <a-button v-hasPermission="'number:delete'" @click="batchDelete">删除</a-button>
+        <!--        <a-dropdown v-hasPermission="'number:export'">-->
+        <!--          <a-menu slot="overlay">-->
+        <!--            <a-menu-item key="export-data" @click="exportExcel">导出Excel</a-menu-item>-->
+        <!--          </a-menu>-->
+        <!--          <a-button>-->
+        <!--            更多操作 <a-icon type="down" />-->
+        <!--          </a-button>-->
+        <!--        </a-dropdown>-->
       </div>
       <!-- 表格区域 -->
       <a-table :columns="columns"
@@ -51,34 +51,34 @@
                :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
                @change="handleTableChange">
         <template slot="operation" slot-scope="text, record">
-          <a-icon v-hasPermission="'category:update'" type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修改"></a-icon>
-          <a-badge v-hasNoPermission="'category:update'" status="warning" text="无权限"></a-badge>
+          <a-icon v-hasPermission="'number:update'" type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修改"></a-icon>
+          <a-badge v-hasNoPermission="'number:update'" status="warning" text="无权限"></a-badge>
         </template>
       </a-table>
     </div>
     <!-- 新增部门 -->
-    <category-add
-      @success="handleCategoryAddSuccess"
-      @close="handleCategoryAddClose"
-      :categoryAddVisiable="categoryAddVisiable">
-    </category-add>
+    <number-add
+      @success="handleNumberAddSuccess"
+      @close="handleNumberAddClose"
+      :numberAddVisiable="numberAddVisiable">
+    </number-add>
     <!-- 修改部门 -->
-    <category-edit
-      ref="categoryEdit"
-      @success="handleCategoryEditSuccess"
-      @close="handleCategoryEditClose"
-      :categoryEditVisiable="categoryEditVisiable">
-    </category-edit>
+    <number-edit
+      ref="numberEdit"
+      @success="handleNumberEditSuccess"
+      @close="handleNumberEditClose"
+      :numberEditVisiable="numberEditVisiable">
+    </number-edit>
   </a-card>
 </template>
 
 <script>
 import RangeDate from '@/components/datetime/RangeDate'
-import CategoryAdd from './CategoryAdd'
-import CategoryEdit from './CategoryEdit'
+import NumberAdd from './NumberAdd'
+import NumberEdit from './NumberEdit'
 export default {
-  name: 'Category',
-  components: {CategoryAdd, CategoryEdit, RangeDate},
+  name: 'Number',
+  components: {NumberAdd, NumberEdit, RangeDate},
   data () {
     return {
       advanced: false,
@@ -92,25 +92,36 @@ export default {
         indentSize: 100
       },
       loading: false,
-      categoryAddVisiable: false,
-      categoryEditVisiable: false
+      numberAddVisiable: false,
+      numberEditVisiable: false
     }
   },
   computed: {
     columns () {
-      let {sortedInfo} = this
-      sortedInfo = sortedInfo || {}
       return [{
-        title: '名称',
-        dataIndex: 'text'
+        title: '设备编号',
+        dataIndex: 'code'
       }, {
-        title: '排序',
-        dataIndex: 'order'
+        title: '分类',
+        dataIndex: 'categoryName'
       }, {
-        title: '创建时间',
-        dataIndex: 'createTime',
-        sorter: true,
-        sortOrder: sortedInfo.columnKey === 'createTime' && sortedInfo.order
+        title: '组织',
+        dataIndex: 'companyBusinessName'
+      }, {
+        title: '位置',
+        dataIndex: 'location'
+      }, {
+        title: '启用状态',
+        dataIndex: 'status'
+      }, {
+        title: '运行状态',
+        dataIndex: 'pause'
+      }, {
+        title: '负责人姓名',
+        dataIndex: 'leaderName'
+      }, {
+        title: '负责人手机',
+        dataIndex: 'leaderPhone'
       }, {
         title: '操作',
         dataIndex: 'operation',
@@ -127,28 +138,28 @@ export default {
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },
-    handleCategoryAddClose () {
-      this.categoryAddVisiable = false
+    handleNumberAddClose () {
+      this.numberAddVisiable = false
     },
-    handleCategoryAddSuccess () {
-      this.categoryAddVisiable = false
-      this.$message.success('新增终端成功')
+    handleNumberAddSuccess () {
+      this.numberAddVisiable = false
+      this.$message.success('新增设备成功')
       this.fetch()
     },
     add () {
-      this.categoryAddVisiable = true
+      this.numberAddVisiable = true
     },
-    handleCategoryEditClose () {
-      this.categoryEditVisiable = false
+    handleNumberEditClose () {
+      this.numberEditVisiable = false
     },
-    handleCategoryEditSuccess () {
-      this.categoryEditVisiable = false
-      this.$message.success('修改终端成功')
+    handleNumberEditSuccess () {
+      this.numberEditVisiable = false
+      this.$message.success('修改设备成功')
       this.fetch()
     },
     edit (record) {
-      this.categoryEditVisiable = true
-      this.$refs.categoryEdit.setFormValues(record)
+      this.numberEditVisiable = true
+      this.$refs.numberEdit.setFormValues(record)
     },
     batchDelete () {
       if (!this.selectedRowKeys.length) {
@@ -156,12 +167,16 @@ export default {
         return
       }
       let that = this
+      let numberIds = []
+      for (let key of that.selectedRowKeys) {
+        numberIds.push(that.dataSource[key].numberId)
+      }
       this.$confirm({
         title: '确定删除所选中的记录?',
         content: '当您点击确定按钮后，这些记录将会被彻底删除，如果其包含子记录，也将一并删除！',
         centered: true,
         onOk () {
-          that.$delete('category/' + that.selectedRowKeys.join(',')).then(() => {
+          that.$delete('number/' + numberIds.join(',')).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.fetch()
@@ -208,12 +223,12 @@ export default {
     },
     fetch (params = {}) {
       this.loading = true
-      this.$get('category', {
+      this.$get('number', {
         ...params
       }).then((r) => {
         let data = r.data
         this.loading = false
-        this.dataSource = data.rows.children
+        this.dataSource = data.rows
       })
     }
   }

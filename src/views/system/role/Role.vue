@@ -200,6 +200,7 @@ export default {
     handleDateChange (value) {
       if (value) {
         this.queryParams.createTimeFrom = value[0]
+        console.log('iiiii ', value[0])
         this.queryParams.createTimeTo = value[1]
       }
     },

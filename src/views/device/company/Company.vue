@@ -10,37 +10,37 @@
                 label="名称"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.categoryName"/>
+                <a-input v-model="queryParams.companyName"/>
               </a-form-item>
             </a-col>
             <span style="float: right; margin-top: 3px;">
               <a-button type="primary" @click="search">查询</a-button>
               <a-button style="margin-left: 8px" @click="reset">重置</a-button>
             </span>
-<!--            <a-col :md="12" :sm="24" >-->
-<!--              <a-form-item-->
-<!--                label="创建时间"-->
-<!--                :labelCol="{span: 5}"-->
-<!--                :wrapperCol="{span: 18, offset: 1}">-->
-<!--                <range-date @change="handleDateChange" ref="createTime"></range-date>-->
-<!--              </a-form-item>-->
-<!--            </a-col>-->
+            <!--            <a-col :md="12" :sm="24" >-->
+            <!--              <a-form-item-->
+            <!--                label="创建时间"-->
+            <!--                :labelCol="{span: 5}"-->
+            <!--                :wrapperCol="{span: 18, offset: 1}">-->
+            <!--                <range-date @change="handleDateChange" ref="createTime"></range-date>-->
+            <!--              </a-form-item>-->
+            <!--            </a-col>-->
           </a-row>
         </div>
       </a-form>
     </div>
     <div>
       <div class="operator" >
-        <a-button v-hasPermission="'category:add'" type="primary" ghost @click="add">新增</a-button>
-        <a-button v-hasPermission="'category:delete'" @click="batchDelete">删除</a-button>
-<!--        <a-dropdown v-hasPermission="'category:export'">-->
-<!--          <a-menu slot="overlay">-->
-<!--            <a-menu-item key="export-data" @click="exportExcel">导出Excel</a-menu-item>-->
-<!--          </a-menu>-->
-<!--          <a-button>-->
-<!--            更多操作 <a-icon type="down" />-->
-<!--          </a-button>-->
-<!--        </a-dropdown>-->
+        <a-button v-hasPermission="'company:add'" type="primary" ghost @click="add">新增</a-button>
+        <a-button v-hasPermission="'company:delete'" @click="batchDelete">删除</a-button>
+        <!--        <a-dropdown v-hasPermission="'company:export'">-->
+        <!--          <a-menu slot="overlay">-->
+        <!--            <a-menu-item key="export-data" @click="exportExcel">导出Excel</a-menu-item>-->
+        <!--          </a-menu>-->
+        <!--          <a-button>-->
+        <!--            更多操作 <a-icon type="down" />-->
+        <!--          </a-button>-->
+        <!--        </a-dropdown>-->
       </div>
       <!-- 表格区域 -->
       <a-table :columns="columns"
@@ -51,34 +51,34 @@
                :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
                @change="handleTableChange">
         <template slot="operation" slot-scope="text, record">
-          <a-icon v-hasPermission="'category:update'" type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修改"></a-icon>
-          <a-badge v-hasNoPermission="'category:update'" status="warning" text="无权限"></a-badge>
+          <a-icon v-hasPermission="'company:update'" type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修改"></a-icon>
+          <a-badge v-hasNoPermission="'company:update'" status="warning" text="无权限"></a-badge>
         </template>
       </a-table>
     </div>
     <!-- 新增部门 -->
-    <category-add
-      @success="handleCategoryAddSuccess"
-      @close="handleCategoryAddClose"
-      :categoryAddVisiable="categoryAddVisiable">
-    </category-add>
+    <company-add
+      @success="handleCompanyAddSuccess"
+      @close="handleCompanyAddClose"
+      :companyAddVisiable="companyAddVisiable">
+    </company-add>
     <!-- 修改部门 -->
-    <category-edit
-      ref="categoryEdit"
-      @success="handleCategoryEditSuccess"
-      @close="handleCategoryEditClose"
-      :categoryEditVisiable="categoryEditVisiable">
-    </category-edit>
+    <company-edit
+      ref="companyEdit"
+      @success="handleCompanyEditSuccess"
+      @close="handleCompanyEditClose"
+      :companyEditVisiable="companyEditVisiable">
+    </company-edit>
   </a-card>
 </template>
 
 <script>
 import RangeDate from '@/components/datetime/RangeDate'
-import CategoryAdd from './CategoryAdd'
-import CategoryEdit from './CategoryEdit'
+import CompanyAdd from './CompanyAdd'
+import CompanyEdit from './CompanyEdit'
 export default {
-  name: 'Category',
-  components: {CategoryAdd, CategoryEdit, RangeDate},
+  name: 'Company',
+  components: {CompanyAdd, CompanyEdit, RangeDate},
   data () {
     return {
       advanced: false,
@@ -92,8 +92,8 @@ export default {
         indentSize: 100
       },
       loading: false,
-      categoryAddVisiable: false,
-      categoryEditVisiable: false
+      companyAddVisiable: false,
+      companyEditVisiable: false
     }
   },
   computed: {
@@ -127,28 +127,28 @@ export default {
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },
-    handleCategoryAddClose () {
-      this.categoryAddVisiable = false
+    handleCompanyAddClose () {
+      this.companyAddVisiable = false
     },
-    handleCategoryAddSuccess () {
-      this.categoryAddVisiable = false
+    handleCompanyAddSuccess () {
+      this.companyAddVisiable = false
       this.$message.success('新增终端成功')
       this.fetch()
     },
     add () {
-      this.categoryAddVisiable = true
+      this.companyAddVisiable = true
     },
-    handleCategoryEditClose () {
-      this.categoryEditVisiable = false
+    handleCompanyEditClose () {
+      this.companyEditVisiable = false
     },
-    handleCategoryEditSuccess () {
-      this.categoryEditVisiable = false
+    handleCompanyEditSuccess () {
+      this.companyEditVisiable = false
       this.$message.success('修改终端成功')
       this.fetch()
     },
     edit (record) {
-      this.categoryEditVisiable = true
-      this.$refs.categoryEdit.setFormValues(record)
+      this.companyEditVisiable = true
+      this.$refs.companyEdit.setFormValues(record)
     },
     batchDelete () {
       if (!this.selectedRowKeys.length) {
@@ -161,7 +161,7 @@ export default {
         content: '当您点击确定按钮后，这些记录将会被彻底删除，如果其包含子记录，也将一并删除！',
         centered: true,
         onOk () {
-          that.$delete('category/' + that.selectedRowKeys.join(',')).then(() => {
+          that.$delete('company/' + that.selectedRowKeys.join(',')).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.fetch()
@@ -208,7 +208,7 @@ export default {
     },
     fetch (params = {}) {
       this.loading = true
-      this.$get('category', {
+      this.$get('company', {
         ...params
       }).then((r) => {
         let data = r.data
@@ -217,6 +217,7 @@ export default {
       })
     }
   }
+
 }
 </script>
 
