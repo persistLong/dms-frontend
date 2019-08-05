@@ -9,17 +9,17 @@
     :visible="categoryEditVisiable"
     style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
     <a-form :form="form">
-      <a-form-item label='部门名称' v-bind="formItemLayout">
+      <a-form-item label='分类名称' v-bind="formItemLayout">
         <a-input v-decorator="['categoryName',
                    {rules: [
-                    { required: true, message: '部门名称不能为空'},
+                    { required: true, message: '分类名称不能为空'},
                     { max: 20, message: '长度不能超过20个字符'}
                   ]}]"/>
       </a-form-item>
-      <a-form-item label='部门排序' v-bind="formItemLayout">
-        <a-input-number v-decorator="['orderNum']" style="width: 100%"/>
-      </a-form-item>
-      <a-form-item label='上级部门'
+<!--      <a-form-item label='分类排序' v-bind="formItemLayout">-->
+<!--        <a-input-number v-decorator="['orderNum']" style="width: 100%"/>-->
+<!--      </a-form-item>-->
+      <a-form-item label='上级分类'
                    style="margin-bottom: 2rem"
                    v-bind="formItemLayout">
         <a-tree
@@ -82,6 +82,7 @@ export default {
     },
     handleCheck (checkedKeys) {
       this.checkedKeys = checkedKeys
+      console.log('checkedKeys ', checkedKeys)
     },
     handleExpand (expandedKeys) {
       this.expandedKeys = expandedKeys

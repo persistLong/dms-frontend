@@ -10,7 +10,7 @@
                 label="名称"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.companyName"/>
+                <a-input v-model="queryParams.companyBusinessName"/>
               </a-form-item>
             </a-col>
             <span style="float: right; margin-top: 3px;">
@@ -180,6 +180,7 @@ export default {
         sortField = sortedInfo.field
         sortOrder = sortedInfo.order
       }
+      console.log('hello')
       this.fetch({
         sortField: sortField,
         sortOrder: sortOrder,

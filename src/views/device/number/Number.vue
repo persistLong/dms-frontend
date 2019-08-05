@@ -87,9 +87,15 @@ export default {
       queryParams: {},
       sortedInfo: null,
       pagination: {
-        defaultPageSize: 10000000,
+        // defaultPageSize: 10000000,
         hideOnSinglePage: true,
-        indentSize: 100
+        indentSize: 100,
+        pageSizeOptions: ['10', '20', '30', '40', '100'],
+        defaultCurrent: 1,
+        defaultPageSize: 10,
+        showQuickJumper: true,
+        showSizeChanger: true,
+        showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`
       },
       loading: false,
       numberAddVisiable: false,
@@ -112,10 +118,30 @@ export default {
         dataIndex: 'location'
       }, {
         title: '启用状态',
-        dataIndex: 'status'
+        dataIndex: 'status',
+        customRender: (text, row, index) => {
+          switch (text) {
+            case '0':
+              return <a-tag color="green">启用</a-tag>
+            case '1':
+              return <a-tag color="orange">禁用</a-tag>
+            default:
+              return text
+          }
+        }
       }, {
         title: '运行状态',
-        dataIndex: 'pause'
+        dataIndex: 'pause',
+        customRender: (text, row, index) => {
+          switch (text) {
+            case '1':
+              return <a-tag color="green">在线</a-tag>
+            case '0':
+              return <a-tag color="orange">离线</a-tag>
+            default:
+              return text
+          }
+        }
       }, {
         title: '负责人姓名',
         dataIndex: 'leaderName'

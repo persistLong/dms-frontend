@@ -62,26 +62,24 @@
           v-model="number.location"
           v-decorator="['location']"/>
       </a-form-item>
-      <div class="statusContainer">
-        <a-form-item label='启用状态' v-bind="formItemLayout">
-          <a-radio-group
+      <a-form-item label='启用状态' v-bind="formItemLayout">
+        <a-radio-group
             v-model="number.status"
             v-decorator="['status', {rules: [{ required: true, message: '请选择启用状态' }]}]"
-          >
-            <a-radio value="0">禁用</a-radio>
-            <a-radio value="1">启用</a-radio>
-          </a-radio-group>
+        >
+          <a-radio value="0">禁用</a-radio>
+          <a-radio value="1">启用</a-radio>
+        </a-radio-group>
         </a-form-item>
-        <a-form-item label='运行状态' v-bind="formItemLayout">
-          <a-radio-group
-            v-model="number.pause"
-            v-decorator="['pause',{rules: [{ required: true, message: '请选择运行状态' }]}]"
-          >
-            <a-radio value="0">在线</a-radio>
-            <a-radio value="1">离线</a-radio>
-          </a-radio-group>
-        </a-form-item>
-      </div>
+      <a-form-item label='运行状态' v-bind="formItemLayout">
+        <a-radio-group
+          v-model="number.pause"
+          v-decorator="['pause',{rules: [{ required: true, message: '请选择运行状态' }]}]"
+        >
+          <a-radio value="0">在线</a-radio>
+          <a-radio value="1">离线</a-radio>
+        </a-radio-group>
+      </a-form-item>
       <a-form-item label='负责人姓名' v-bind="formItemLayout">
         <a-input
           v-model="number.leaderName"
@@ -208,7 +206,7 @@ export default {
         if (!err && this.validateStatus === 'success') {
           this.loading = true
           // this.user.roleId = this.user.roleId.join(',')
-          console.log(this.number)
+          // console.log(this.number)
           this.$post('number', {
             ...this.number
           }).then((r) => {
@@ -252,16 +250,12 @@ export default {
       if (value) {
         var date = new Date(dateStr)
         this.number.guaranteeTime = date
-        console.log(this.number.guaranteeTime)
-        // this.queryParams.createTimeTo = value[1]
       }
     },
     handleSalesDateChange (value, dateStr) {
       if (value) {
         var date = new Date(dateStr)
         this.number.salesTime = date
-        console.log(this.number.salesTime)
-        // this.queryParams.createTimeTo = value[1]
       }
     }
   },
@@ -269,11 +263,9 @@ export default {
     numberAddVisiable () {
       if (this.numberAddVisiable) {
         this.$get('company').then((r) => {
-          // console.log('company ', r.data.rows.children)
           this.companyTreeData = r.data.rows.children
         })
         this.$get('category').then((r) => {
-          // console.log('category ', r.data.rows.children)
           this.categoryTreeData = r.data.rows.children
         })
       }
