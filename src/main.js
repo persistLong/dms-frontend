@@ -6,7 +6,7 @@ import store from './store'
 import request from 'utils/request'
 import db from 'utils/localstorage'
 import VueApexCharts from 'vue-apexcharts'
-
+import AMap from 'vue-amap'
 import 'ant-design-vue/dist/antd.css'
 
 import 'utils/install'
@@ -15,6 +15,7 @@ Vue.config.productionTip = false
 Vue.use(Antd)
 Vue.use(db)
 Vue.use(VueApexCharts)
+Vue.use(AMap)
 
 Vue.component('apexchart', VueApexCharts)
 
@@ -24,6 +25,13 @@ Vue.use({
   }
 })
 
+AMap.initAMapApiLoader({
+  // 高德的key
+  key: '90bb6986c69a18eb621489a9515a9588',
+  // 插件集合
+  plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor']
+
+})
 Vue.prototype.$post = request.post
 Vue.prototype.$get = request.get
 Vue.prototype.$put = request.put

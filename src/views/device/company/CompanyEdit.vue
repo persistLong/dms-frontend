@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    title="修改按钮"
+    title="修改组织"
     :maskClosable="false"
     width=650
     placement="right"
