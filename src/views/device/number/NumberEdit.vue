@@ -184,7 +184,7 @@ export default {
       this.form.setFieldsValue({'salesTime': number.salesTime})
       this.form.getFieldDecorator('guaranteeTime')
       this.form.setFieldsValue({'guaranteeTime': number.guaranteeTime})
-      console.log('----', number.guaranteeTime)
+      // console.log('----', number.guaranteeTime)
       this.number.numberId = number.numberId
     },
     handleSubmit () {

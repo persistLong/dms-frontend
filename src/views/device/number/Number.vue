@@ -121,9 +121,9 @@ export default {
         dataIndex: 'status',
         customRender: (text, row, index) => {
           switch (text) {
-            case '0':
-              return <a-tag color="green">启用</a-tag>
             case '1':
+              return <a-tag color="green">启用</a-tag>
+            case '0':
               return <a-tag color="orange">禁用</a-tag>
             default:
               return text
@@ -134,9 +134,9 @@ export default {
         dataIndex: 'pause',
         customRender: (text, row, index) => {
           switch (text) {
-            case '1':
-              return <a-tag color="green">在线</a-tag>
             case '0':
+              return <a-tag color="green">在线</a-tag>
+            case '1':
               return <a-tag color="orange">离线</a-tag>
             default:
               return text

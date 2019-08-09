@@ -29,8 +29,8 @@ AMap.initAMapApiLoader({
   // 高德的key
   key: '90bb6986c69a18eb621489a9515a9588',
   // 插件集合
-  plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor']
-
+  plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
+  uiVersion: '1.0.11' // 版本号
 })
 Vue.prototype.$post = request.post
 Vue.prototype.$get = request.get

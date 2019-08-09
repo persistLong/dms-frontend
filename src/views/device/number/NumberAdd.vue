@@ -117,6 +117,13 @@
       <a-form-item label='保修日期' v-bind="formItemLayout">
         <a-date-picker @change="handleGuaranteeDateChange" ref="guaranteeTime"></a-date-picker>
       </a-form-item>
+      <a-form-item label="设备图片" v-bind="formItemLayout">
+        <a-upload :multiple="false" :before-upload="beforeUpload" :fileList="fileList" :remove="handleRemove" name="imgFile">
+          <a-button>
+            <a-icon type="upload"/>点击选择图片
+          </a-button>
+        </a-upload>
+      </a-form-item>
 <!--      <a-form-item label='角色' v-bind="formItemLayout">-->
 <!--        <a-select-->
 <!--          mode="multiple"-->
@@ -157,12 +164,14 @@
 
 <script>
 // import RangeDate from '@/components/datetime/RangeDate'
+import AFormItem from "ant-design-vue/es/form/FormItem";
 const formItemLayout = {
   labelCol: { span: 5 },
   wrapperCol: { span: 15 }
 }
 export default {
   name: 'NumberAdd',
+  components: {AFormItem},
   // components: { RangeDate },
   props: {
     numberAddVisiable: {
@@ -182,7 +191,9 @@ export default {
       // defaultPassword: '1234qwer',
       form: this.$form.createForm(this),
       validateStatus: '',
-      help: ''
+      help: '',
+      fileList: [],
+      uploading: false
     }
   },
   methods: {
@@ -257,6 +268,17 @@ export default {
         var date = new Date(dateStr)
         this.number.salesTime = date
       }
+    },
+    beforeUpload (file) {
+      this.number.imgFile = file
+      console.log('number', this.number)
+      return false
+    },
+    handleRemove (file) {
+      const index = this.fileList.indexOf(file);
+      const newFileList = this.fileList.slice();
+      newFileList.splice(index, 1);
+      this.fileList = newFileList
     }
   },
   watch: {
@@ -276,8 +298,8 @@ export default {
 </script>
 
 <style scoped>
-/*.statusContainer{*/
-/*  display: flex;*/
-/*  flex-direction: row;*/
-/*}*/
+#uploadContainer{
+  display: flex;
+  flex-direction: row;
+}
 </style>
