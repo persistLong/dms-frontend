@@ -7,7 +7,8 @@ moment.locale('zh-cn')
 
 // 统一配置
 let FEBS_REQUEST = axios.create({
-  baseURL: 'http://192.168.0.178:9527/',
+  baseURL: 'http://192.168.0.182:9527/',
+  // baseURL: 'http://localhost:9527/',
   responseType: 'json',
   validateStatus (status) {
     // 200 外的状态码都认定为失败
@@ -82,8 +83,6 @@ const request = {
     return FEBS_REQUEST.post(url, params, {
       transformRequest: [(params) => {
         let result = ''
-        console.log('url', url)
-        console.log('params', params)
         Object.keys(params).forEach((key) => {
           if (!Object.is(params[key], undefined) && !Object.is(params[key], null)) {
             result += encodeURIComponent(key) + '=' + encodeURIComponent(params[key]) + '&'

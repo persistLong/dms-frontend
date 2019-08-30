@@ -149,11 +149,22 @@ export default {
         title: '负责人手机',
         dataIndex: 'leaderPhone'
       }, {
+        title: '图片',
+        dataIndex: 'url',
+        customRender: (text, row, index) => {
+          if (!text) {
+            return <a-tag color="red">暂无图片</a-tag>
+          }
+          // 设备图片url
+          let imgUrl = 'http://192.168.179.55/group1/' + text
+          return <img src={imgUrl}/>
+        }
+      }, {
         title: '操作',
         dataIndex: 'operation',
         scopedSlots: {customRender: 'operation'},
-        fixed: 'right',
-        width: 120
+        fixed: 'right'
+        // width: 120
       }]
     }
   },

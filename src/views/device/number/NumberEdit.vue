@@ -88,7 +88,7 @@
       >
         <!--        :labelCol="{span: 5}"-->
         <!--        :wrapperCol="{span: 18, offset: 1}"-->
-        <a-date-picker :value="salesTime" ref="salesTime"></a-date-picker>
+        <a-date-picker :value="salesTime" ref="salesTime" :defaultValue="number.salesTime"></a-date-picker>
       </a-form-item>
       <a-form-item
         label="保修时间" v-bind="formItemLayout"

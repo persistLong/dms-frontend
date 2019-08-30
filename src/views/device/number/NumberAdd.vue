@@ -118,7 +118,7 @@
         <a-date-picker @change="handleGuaranteeDateChange" ref="guaranteeTime"></a-date-picker>
       </a-form-item>
       <a-form-item label="设备图片" v-bind="formItemLayout">
-        <a-upload :multiple="false" :before-upload="beforeUpload" :fileList="fileList" :remove="handleRemove" name="imgFile">
+        <a-upload :multiple="false" :before-upload="beforeUpload" :fileList="fileList" :remove="handleRemove" :showUploadList="showUploadList" >
           <a-button>
             <a-icon type="upload"/>点击选择图片
           </a-button>
@@ -134,7 +134,6 @@
 <!--          <a-select-option v-for="r in roleData" :key="r.roleId">{{r.roleName}}</a-select-option>-->
 <!--        </a-select>-->
 <!--      </a-form-item>-->
-
 <!--      <a-form-item label='部门' v-bind="formItemLayout">-->
 <!--        <a-tree-select-->
 <!--          :allowClear="true"-->
@@ -164,7 +163,9 @@
 
 <script>
 // import RangeDate from '@/components/datetime/RangeDate'
-import AFormItem from "ant-design-vue/es/form/FormItem";
+import AFormItem from 'ant-design-vue/es/form/FormItem'
+// import reqwest from 'reqwest'
+// import store from '../../../store'
 const formItemLayout = {
   labelCol: { span: 5 },
   wrapperCol: { span: 15 }
@@ -188,12 +189,12 @@ export default {
       categoryTreeData: [],
       companyTreeData: [],
       formItemLayout,
-      // defaultPassword: '1234qwer',
       form: this.$form.createForm(this),
       validateStatus: '',
       help: '',
       fileList: [],
-      uploading: false
+      uploading: false,
+      showUploadList: {showPreviewIcon: true, showRemoveIcon: true}
     }
   },
   methods: {
@@ -216,11 +217,13 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err && this.validateStatus === 'success') {
           this.loading = true
-          // this.user.roleId = this.user.roleId.join(',')
-          // console.log(this.number)
-          this.$post('number', {
-            ...this.number
-          }).then((r) => {
+          let formData = new FormData()
+          let number = this.number
+          // create the formData from number
+          for (let key in number) {
+            formData.append(key, number[key])
+          }
+          this.$upload('number', formData).then((r) => {
             this.reset()
             this.$emit('success')
           }).catch(() => {
@@ -270,14 +273,24 @@ export default {
       }
     },
     beforeUpload (file) {
+      let imgList = ['image/jpeg', 'image/png']
+      if (imgList.indexOf(file.type) === -1) {
+        this.$message.error('只支持jpg和png格式')
+        return false
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isLt2M) {
+        this.$message.error('Image must smaller than 2MB!')
+        return false
+      }
       this.number.imgFile = file
-      console.log('number', this.number)
+      this.fileList = [file]
       return false
     },
     handleRemove (file) {
-      const index = this.fileList.indexOf(file);
-      const newFileList = this.fileList.slice();
-      newFileList.splice(index, 1);
+      const index = this.fileList.indexOf(file)
+      const newFileList = this.fileList.slice()
+      newFileList.splice(index, 1)
       this.fileList = newFileList
     }
   },
