@@ -1,7 +1,6 @@
 <template>
 <!--  <div :class="[multipage === true ? 'multi-page':'single-page', 'not-menu-page', 'home-page']">-->
     <div>
-<!--      <img id='image1' src="./logo-blue.png" width="1080px" height="1080px"/>-->
       <div class="amap-wrapper">
         <button @click="toggleFullScreen" class="fullscreen-button">全屏</button>
         <el-amap id="amap" class="amap-box" :vid="'amap-vue'" :zoom="zoom">
@@ -9,6 +8,7 @@
           <el-amap-info-window v-if="window" :position="window.position" :visible="window.visible" :content="window.content"></el-amap-info-window>
         </el-amap>
       </div>
+
   </div>
 </template>
 <script>
@@ -76,7 +76,6 @@ export default {
       }
       for (let i = 0; i < filterMap.length; i++) {
         let item = filterMap[i]
-
         let position = [item.longitudes, item.latitudes]
         // 根据状态设置图标边框样式
         let content = ''
