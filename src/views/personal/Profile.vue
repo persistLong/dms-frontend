@@ -3,15 +3,15 @@
     <a-card title="">
       <a href="javascript:void(0)" slot="extra" @click="updateProfile">编辑资料</a>
       <a-row :gutter="8">
-        <a-col :span="6">
-          <a-row style="text-align: center">
-            <img style="width: 10rem;border-radius: 2px" alt="头像" :src="avatar">
-          </a-row>
-          <a-row style="text-align: center">
-            <a-button icon="edit" style="margin-top:1rem" @click="updateAvatar">修改头像</a-button>
-          </a-row>
-        </a-col>
-        <a-col :span="12" style="font-size: 1rem">
+        <!--<a-col :span="6">-->
+          <!--<a-row style="text-align: center">-->
+            <!--<img style="width: 10rem;border-radius: 2px" alt="头像" :src="avatar">-->
+          <!--</a-row>-->
+          <!--<a-row style="text-align: center">-->
+            <!--<a-button icon="edit" style="margin-top:1rem" @click="updateAvatar">修改头像</a-button>-->
+          <!--</a-row>-->
+        <!--</a-col>-->
+        <a-col :span="12" style="font-size: 1rem;margin-left: 25px">
           <p>账户：{{user.username}}</p>
           <p :title="user.roleName">角色：{{user.roleName? user.roleName: '暂无角色'}}</p>
           <p>性别：{{sex}}</p>

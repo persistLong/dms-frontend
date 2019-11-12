@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    title="修改组织"
+    title="修改区域"
     :maskClosable="false"
     width=650
     placement="right"
@@ -9,17 +9,17 @@
     :visible="companyEditVisiable"
     style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
     <a-form :form="form">
-      <a-form-item label='组织名称' v-bind="formItemLayout">
+      <a-form-item label='区域名称' v-bind="formItemLayout">
         <a-input v-decorator="['companyName',
                    {rules: [
-                    { required: true, message: '组织名称不能为空'},
+                    { required: true, message: '区域名称不能为空'},
                     { max: 20, message: '长度不能超过20个字符'}
                   ]}]"/>
       </a-form-item>
-      <a-form-item label='部门排序' v-bind="formItemLayout">
+      <a-form-item label='区域排序' v-bind="formItemLayout">
         <a-input-number v-decorator="['orderNum']" style="width: 100%"/>
       </a-form-item>
-      <a-form-item label='上级部门'
+      <a-form-item label='上级区域'
                    style="margin-bottom: 2rem"
                    v-bind="formItemLayout">
         <a-tree
@@ -101,11 +101,11 @@ export default {
     handleSubmit () {
       let checkedArr = Object.is(this.checkedKeys.checked, undefined) ? this.checkedKeys : this.checkedKeys.checked
       if (checkedArr.length > 1) {
-        this.$message.error('最多只能选择一个上级部门，请修改')
+        this.$message.error('最多只能选择一个上级区域，请修改')
         return
       }
       if (checkedArr[0] === this.company.companyId) {
-        this.$message.error('不能选择自己作为上级部门，请修改')
+        this.$message.error('不能选择自己作为上级区域，请修改')
         return
       }
       this.form.validateFields((err, values) => {

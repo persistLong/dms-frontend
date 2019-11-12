@@ -8,9 +8,9 @@
     @cancel="handleCancleClick"
     title="用户信息">
     <a-layout class="user-info">
-      <a-layout-sider class="user-info-side">
-        <a-avatar shape="square" :size="115" icon="user" :src="`static/avatar/${userInfoData.avatar}`"/>
-      </a-layout-sider>
+      <!--<a-layout-sider class="user-info-side">-->
+        <!--<a-avatar shape="square" :size="115" icon="user" :src="`static/avatar/${userInfoData.avatar}`"/>-->
+      <!--</a-layout-sider>-->
       <a-layout-content class="user-content-one">
         <p><a-icon type="user"/>账户：{{userInfoData.username}}</p>
         <p :title="userInfoData.roleName"><a-icon type="star"/>角色：{{userInfoData.roleName? userInfoData.roleName: '暂无角色'}}</p>

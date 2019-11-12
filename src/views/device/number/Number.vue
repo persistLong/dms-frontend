@@ -10,7 +10,7 @@
                 label="设备编号"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.numberName"/>
+                <a-input v-model="queryParams.code"/>
               </a-form-item>
             </a-col>
             <span style="float: right; margin-top: 3px;">
@@ -43,7 +43,8 @@
         <!--        </a-dropdown>-->
       </div>
       <!-- 表格区域 -->
-      <a-table :columns="columns"
+      <a-table ref="TableInfo"
+               :columns="columns"
                :dataSource="dataSource"
                :pagination="pagination"
                :loading="loading"
@@ -86,10 +87,8 @@ export default {
       selectedRowKeys: [],
       queryParams: {},
       sortedInfo: null,
+      paginationInfo: null,
       pagination: {
-        // defaultPageSize: 10000000,
-        hideOnSinglePage: true,
-        indentSize: 100,
         pageSizeOptions: ['10', '20', '30', '40', '100'],
         defaultCurrent: 1,
         defaultPageSize: 10,
@@ -111,33 +110,20 @@ export default {
         title: '分类',
         dataIndex: 'categoryName'
       }, {
-        title: '组织',
+        title: '区域',
         dataIndex: 'companyBusinessName'
       }, {
         title: '位置',
         dataIndex: 'location'
       }, {
-        title: '启用状态',
+        title: '运行状态',
         dataIndex: 'status',
         customRender: (text, row, index) => {
           switch (text) {
-            case '1':
-              return <a-tag color="green">启用</a-tag>
             case '0':
-              return <a-tag color="orange">禁用</a-tag>
-            default:
-              return text
-          }
-        }
-      }, {
-        title: '运行状态',
-        dataIndex: 'pause',
-        customRender: (text, row, index) => {
-          switch (text) {
-            case '0':
-              return <a-tag color="green">在线</a-tag>
-            case '1':
               return <a-tag color="orange">离线</a-tag>
+            case '1':
+              return <a-tag color="green">在线</a-tag>
             default:
               return text
           }
@@ -156,15 +142,15 @@ export default {
             return <a-tag color="red">暂无图片</a-tag>
           }
           // 设备图片url
-          let imgUrl = 'http://192.168.179.55/group1/' + text
-          return <img src={imgUrl}/>
+          let imgUrl = 'http://106.13.22.160/group1/' + text
+          return <img style="width:40px;heigth:40px" slot="pic" slot-scope="text" src={imgUrl} />
         }
       }, {
         title: '操作',
         dataIndex: 'operation',
         scopedSlots: {customRender: 'operation'},
-        fixed: 'right'
-        // width: 120
+        fixed: 'right',
+        width: 140
       }]
     }
   },
@@ -239,6 +225,12 @@ export default {
       })
     },
     reset () {
+      // 重置分页
+      this.$refs.TableInfo.pagination.current = this.pagination.defaultCurrent
+      if (this.paginationInfo) {
+        this.paginationInfo.current = this.pagination.defaultCurrent
+        this.paginationInfo.pageSize = this.pagination.defaultPageSize
+      }
       // 取消选中
       this.selectedRowKeys = []
       // 重置列排序规则
@@ -250,6 +242,8 @@ export default {
       this.fetch()
     },
     handleTableChange (pagination, filters, sorter) {
+      // 将这三个参数赋值给Vue data，用于后续使用
+      this.paginationInfo = pagination
       this.sortedInfo = sorter
       this.fetch({
         sortField: sorter.field,
@@ -260,12 +254,26 @@ export default {
     },
     fetch (params = {}) {
       this.loading = true
+      if (this.paginationInfo) {
+        // 如果分页信息不为空，则设置表格当前第几页，每页条数，并设置查询分页参数
+        this.$refs.TableInfo.pagination.current = this.paginationInfo.current
+        this.$refs.TableInfo.pagination.pageSize = this.paginationInfo.pageSize
+        params.pageSize = this.paginationInfo.pageSize
+        params.pageNum = this.paginationInfo.current
+      } else {
+        // 如果分页信息为空，则设置为默认值
+        params.pageSize = this.pagination.defaultPageSize
+        params.pageNum = this.pagination.defaultCurrent
+      }
       this.$get('number', {
         ...params
       }).then((r) => {
         let data = r.data
         this.loading = false
         this.dataSource = data.rows
+        const pagination = { ...this.pagination }
+        pagination.total = data.total
+        this.pagination = pagination
       })
     }
   }

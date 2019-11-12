@@ -18,12 +18,12 @@
           v-model="number.categoryId">
         </a-tree-select>
       </a-form-item>
-      <a-form-item label='公司' v-bind="formItemLayout">
+      <a-form-item label='区域' v-bind="formItemLayout">
         <a-tree-select
           :allowClear="true"
           :dropdownStyle="{ maxHeight: '220px', overflow: 'auto' }"
           :treeData="companyTreeData"
-          v-decorator="['companyId',{rules: [{ required: true, message: '公司不能为空'}]}]"
+          v-decorator="['companyId',{rules: [{ required: true, message: '区域不能为空'}]}]"
           v-model="number.companyId">
         </a-tree-select>
       </a-form-item>
@@ -41,7 +41,12 @@
         <a-input v-model="number.mac"
                  v-decorator="['mac',{rules: [{ required: true, message: '设备MAC不能为空'}]}]"/>
       </a-form-item>
-      <a-form-item label='经度'
+      <a-form-item label='位置' v-bind="formItemLayout">
+        <a-input
+          v-model="location"
+          v-decorator="['location']" placeholder="请输入:省份＋城市＋区县＋城镇＋乡村＋街道＋门牌号码"/>
+      </a-form-item>
+    <!--  <a-form-item label='经度'
                    v-bind="formItemLayout">
         <a-input v-model="number.longitudes"
                  v-decorator="['longitudes', {rules: [{ message: '请输入正确的经度' }]}]"/>
@@ -51,35 +56,30 @@
                    >
         <a-input v-model="number.latitudes"
                  v-decorator="['latitudes']"/>
-      </a-form-item>
+      </a-form-item>-->
 <!--      <a-form-item label='密码' v-bind="formItemLayout">-->
 <!--        <a-tooltip title='新用户默认密码为 1234qwer'>-->
 <!--          <a-input type='password' readOnly :value="defaultPassword"/>-->
 <!--        </a-tooltip>-->
 <!--      </a-form-item>-->
-      <a-form-item label='位置' v-bind="formItemLayout">
-        <a-input
-          v-model="number.location"
-          v-decorator="['location']"/>
-      </a-form-item>
-      <a-form-item label='启用状态' v-bind="formItemLayout">
-        <a-radio-group
-            v-model="number.status"
-            v-decorator="['status', {rules: [{ required: true, message: '请选择启用状态' }]}]"
-        >
-          <a-radio value="0">禁用</a-radio>
-          <a-radio value="1">启用</a-radio>
-        </a-radio-group>
-        </a-form-item>
-      <a-form-item label='运行状态' v-bind="formItemLayout">
-        <a-radio-group
-          v-model="number.pause"
-          v-decorator="['pause',{rules: [{ required: true, message: '请选择运行状态' }]}]"
-        >
-          <a-radio value="0">在线</a-radio>
-          <a-radio value="1">离线</a-radio>
-        </a-radio-group>
-      </a-form-item>
+    <!--&lt;!&ndash;  <a-form-item label='启用状态' v-bind="formItemLayout">-->
+        <!--<a-radio-group-->
+            <!--v-model="number.status"-->
+            <!--v-decorator="['status', {rules: [{ required: true, message: '请选择启用状态' }]}]"-->
+        <!--&gt;-->
+          <!--<a-radio value="0">禁用</a-radio>-->
+          <!--<a-radio value="1">启用</a-radio>-->
+        <!--</a-radio-group>-->
+        <!--</a-form-item>-->
+      <!--<a-form-item label='运行状态' v-bind="formItemLayout">-->
+        <!--<a-radio-group-->
+          <!--v-model="number.pause"-->
+          <!--v-decorator="['pause',{rules: [{ required: true, message: '请选择运行状态' }]}]"-->
+        <!--&gt;-->
+          <!--<a-radio value="0">在线</a-radio>-->
+          <!--<a-radio value="1">离线</a-radio>-->
+        <!--</a-radio-group>-->
+      <!--</a-form-item>&ndash;&gt;-->
       <a-form-item label='负责人姓名' v-bind="formItemLayout">
         <a-input
           v-model="number.leaderName"
@@ -166,13 +166,15 @@
 import AFormItem from 'ant-design-vue/es/form/FormItem'
 // import reqwest from 'reqwest'
 // import store from '../../../store'
+import axios from 'axios'
+import ATextarea from 'ant-design-vue/es/input/TextArea'
 const formItemLayout = {
   labelCol: { span: 5 },
   wrapperCol: { span: 15 }
 }
 export default {
   name: 'NumberAdd',
-  components: {AFormItem},
+  components: {ATextarea, AFormItem},
   // components: { RangeDate },
   props: {
     numberAddVisiable: {
@@ -182,12 +184,17 @@ export default {
   data () {
     return {
       number: {
-        code: ''
+        code: '',
+        location: '',
+        longitudes: '',
+        latitudes: ''
       },
       loading: false,
       roleData: [],
       categoryTreeData: [],
       companyTreeData: [],
+      location: '',
+      timeout: null,
       formItemLayout,
       form: this.$form.createForm(this),
       validateStatus: '',
@@ -292,6 +299,25 @@ export default {
       const newFileList = this.fileList.slice()
       newFileList.splice(index, 1)
       this.fileList = newFileList
+    },
+    getLocation (location) {
+      axios.get('https://restapi.amap.com/v3/geocode/geo', {
+        params: {
+          address: location,
+          key: '7d34f5c473caba282339693cab964295'
+        }
+      })
+        .then((response) => {
+          this.number.location = location
+          this.number.longitudes = response.data.geocodes[0].location.split(',')[0]
+          this.number.latitudes = response.data.geocodes[0].location.split(',')[1]
+          if (this.number.longitudes !== null && this.number.latitudes !== null) {
+            alert('获取经纬度成功！')
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     }
   },
   watch: {
@@ -304,6 +330,13 @@ export default {
           this.categoryTreeData = r.data.rows.children
         })
       }
+    },
+    location (curVal) {
+      // 实现input连续输入，只发一次请求
+      clearTimeout(this.timeout)
+      this.timeout = setTimeout(() => {
+        this.getLocation(curVal)
+      }, 400)
     }
   }
 

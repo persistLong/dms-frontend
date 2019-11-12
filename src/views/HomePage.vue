@@ -1,151 +1,151 @@
 <template>
-<!--  <div :class="[multipage === true ? 'multi-page':'single-page', 'not-menu-page', 'home-page']">-->
-    <div>
-      <div class="amap-wrapper">
-        <button @click="toggleFullScreen" class="fullscreen-button">全屏</button>
-        <el-amap id="amap" class="amap-box" :vid="'amap-vue'" :zoom="zoom">
-          <el-amap-marker v-for="marker in markers" :key="marker.id" :position="marker.position" :events="marker.events" :icon="marker.icon" :content="marker.content"></el-amap-marker>
-          <el-amap-info-window v-if="window" :position="window.position" :visible="window.visible" :content="window.content"></el-amap-info-window>
-        </el-amap>
-      </div>
-
+  <div :class="[multipage === true ? 'multi-page':'single-page', 'not-menu-page', 'home-page']">
+    <a-row :gutter="8" class="count-info">
+      <a-col :span="12" class="visit-count-wrapper">
+        <a-card class="visit-count">
+          <apexchart type=pie width=380 height=400 :options="chartOptions" :series="series" />
+          <div style="text-align: center">设备在线情况统计</div>
+        </a-card>
+      </a-col>
+      <a-col :span="12" class="visit-count-wrapper">
+        <a-card class="visit-count">
+          <apexchart type=line width=380 height=400 :options="chartOptions1" :series="series1" />
+          <div style="text-align: center">设备故障日志情况统计</div>
+        </a-card>
+      </a-col>
+    </a-row>
   </div>
 </template>
 <script>
-import screenfull from 'screenfull'
 import moment from 'moment'
-// import HeadInfo from '@/views/common/HeadInfo'
-// import {mapState} from 'vuex
-// eslint-disable-next-line import/no-duplicatesc
-// import { AMapManager } from 'vue-amap';
-// import AMap from 'amap'
-import VueAMap from 'vue-amap'
-// eslint-disable-next-line no-unused-vars
-let amapManager = new VueAMap.AMapManager()
 moment.locale('zh-cn')
+
 export default {
   name: 'HomePage',
   data () {
-    // let self = this
     return {
-      position: [118.08944444, 24.46583333],
-      isFullScreen: false,
-      zoom: 14,
-      markers: [],
-      windows: [],
-      window: '',
-      mapData: [],
-      activeDevice: 0,
-      suspendedDevice: 0
-    }
-  },
-  computed: {
-  },
-  methods: {
-    toggleFullScreen () {
-      if (!screenfull.enabled) {
-        alert('浏览器不支持全屏')
-        this.msg = '浏览器不支持全屏'
-        return false
-      }
-      // 全屏
-      var map = document.getElementById('amap-vue')
-      map.style.width = 1920 + 'px'
-      map.style.height = 1080 + 'px'
-      screenfull.toggle(map)
-    },
-    getMapData () {
-      let categoryId = 0
-      this.$get(`number/map/${categoryId}`).then((r) => {
-        this.mapData = r.data
-        this.createMarkers()
-      })
-    },
-    createMarkers () {
-      let markers = []
-      let windows = []
-      let self = this
-      let mapData = this.mapData
-      // 只渲染有经纬度的设备, 过滤掉没有经纬度的设备
-      let filterMap = []
-      for (let i = 0; i < mapData.length; i++) {
-        let item = mapData[i]
-        if (item.latitudes && item.longitudes) {
-          filterMap.push(item)
-        }
-      }
-      for (let i = 0; i < filterMap.length; i++) {
-        let item = filterMap[i]
-        let position = [item.longitudes, item.latitudes]
-        // 根据状态设置图标边框样式
-        let content = ''
-        // let imgUrl = 'http://192.168.179.55/group1/' + item.url
-        // let imgUrl = '../../static/img/logo.
-        if (item.status === '1') {
-          content = '<img src="../../static/icons/pos1.jpeg" class="active-marker">'
-        } else if (item.status === '0') {
-          content = '<img src="../../static/icons/pos1.jpeg" class="suspended-marker">'
-        }
-        markers.push({
-          content: content,
-          position: position,
-          events: {
-            click () {
-              self.windows.forEach(window => {
-                window.visible = false
-              })
-              self.window = self.windows[i]
-              self.$nextTick(() => {
-                self.window.visible = true
-              })
+      series: [],
+      chartOptions: {
+        labels: ['在线设备', '离线设备'],
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
             }
           }
-        })
-        windows.push({
-          position: position,
-          content: `<div>编号：${item.code}</div><div>部署位置：${item.location}</div>`,
-          visible: false
-        })
+        }]
+      },
+      series1: [{
+        name: 'Log',
+        data: []
+      }],
+      chartOptions1: {
+        chart: {
+          height: 350,
+          zoom: {
+            enabled: false
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          curve: 'straight'
+        },
+        grid: {
+          row: {
+            colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+            opacity: 0.5
+          }
+        },
+        xaxis: {
+          categories: []
+        }
       }
-
-      this.markers = markers
-      this.windows = windows
     }
   },
-  renderStats () {
-    let mapData = this.mapData
-    let length = mapData.length
-    let activeDevice = 0
-    let suspendedDevice = 0
-    for (var i = 0; i < length; i++) {
-      if (mapData[i].status) {
-        activeDevice++
-      } else {
-        suspendedDevice++
-      }
+  methods: {
+    // 获取设备数据
+    getMapData () {
+      this.series1[0].data = []
+      this.$get(`number/mapList`).then((r) => {
+        let mapData = r.data
+        let length = mapData.length
+        let activeDevice = 0
+        let suspendedDevice = 0
+        for (let i = 0; i < length; i++) {
+          if (mapData[i].status === '1') {
+            activeDevice++
+          } else {
+            suspendedDevice++
+          }
+        }
+        this.series.push(activeDevice)
+        this.series.push(suspendedDevice)
+        console.info(this.series)
+      })
+    },
+    spitDateStr (date) {
+      let strs = [] // 定义一数组
+      strs = date.split(' ') // 字符分割
+      return strs[0]
+    },
+    getDateStr (AddDayCount) {
+      let dd = new Date()
+      dd.setDate(dd.getDate() + AddDayCount)// 获取AddDayCount天后的日期
+      let y = dd.getFullYear()
+      let m = dd.getMonth() + 1// 获取当前月份的日期
+      let d = dd.getDate()
+      return y + '-' + (m < 10 ? '0' + m : m) + '-' + (d < 10 ? '0' + d : d)
+    },
+    getHitchData () {
+      this.series1[0].data = []
+      this.chartOptions1.xaxis.categories = []
+      this.$get(`hitch/hitchList`).then((r) => {
+        let hitchData = r.data
+        let length = hitchData.length
+        let values = [0, 0, 0, 0, 0, 0, 0]
+        let dateArray = [this.getDateStr(-6), this.getDateStr(-5), this.getDateStr(-4),
+          this.getDateStr(-3), this.getDateStr(-2), this.getDateStr(-1), this.getDateStr(0)]
+        console.info(dateArray)
+        for (let i = 0; i < length; i++) {
+          for (let j = 0; j < dateArray.length; j++) {
+            if (dateArray[j] === this.spitDateStr(hitchData[i].createTime)) {
+              values[j]++
+            }
+          }
+        }
+        this.series1[0].data = values
+        this.chartOptions1.xaxis.categories = dateArray
+      })
     }
-    this.activeDevice = activeDevice
-    this.suspendedDevice = suspendedDevice
   },
   mounted () {
     this.getMapData()
+    this.getHitchData()
   }
 }
 </script>
 <style lang="less">
-  .amap-wrapper {
-    width: 1920px;
-    height: 1080px;
-  }
-  .active-marker{
-    border-radius: 50%;
-    border: green solid 2px;
-  }
-  .suspended-marker{
-    border-radius: 50%;
-    border: #cf1322 solid 2px;
-  }
-  .fullscreen-button{
-    /*float: right;*/
-  }
+    .count-info {
+      .visit-count-wrapper {
+        padding-left: 0 !important;
+        .visit-count {
+          padding: .5rem;
+          border-color: #f1f1f1;
+          .ant-card-body {
+            padding: .5rem 1rem !important;
+          }
+        }
+      }
+    }
+    #chart {
+      max-width: 380px;
+      margin: 35px auto;
+    }
+
 </style>

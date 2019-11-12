@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    title="新增部门"
+    title="新增区域"
     :maskClosable="false"
     width=650
     placement="right"
@@ -9,18 +9,18 @@
     :visible="companyAddVisiable"
     style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
     <a-form :form="form">
-      <a-form-item label='部门名称' v-bind="formItemLayout">
+      <a-form-item label='区域名称' v-bind="formItemLayout">
         <a-input v-model="company.companyBusinessName"
                  v-decorator="['companyBusinessName',
                    {rules: [
-                    { required: true, message: '部门名称不能为空'},
+                    { required: true, message: '区域名称不能为空'},
                     { max: 20, message: '长度不能超过20个字符'}
                   ]}]"/>
       </a-form-item>
-      <a-form-item label='部门排序' v-bind="formItemLayout">
+      <a-form-item label='区域排序' v-bind="formItemLayout">
         <a-input-number v-model="company.orderNum" style="width: 100%"/>
       </a-form-item>
-      <a-form-item label='上级部门'
+      <a-form-item label='上级区域'
                    style="margin-bottom: 2rem"
                    v-bind="formItemLayout">
         <a-tree
@@ -88,7 +88,7 @@ export default {
     handleSubmit () {
       let checkedArr = Object.is(this.checkedKeys.checked, undefined) ? this.checkedKeys : this.checkedKeys.checked
       if (checkedArr.length > 1) {
-        this.$message.error('最多只能选择一个上级部门，请修改')
+        this.$message.error('最多只能选择一个上级区域，请修改')
         return
       }
       this.form.validateFields((err, values) => {

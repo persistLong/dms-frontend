@@ -43,7 +43,8 @@
         <!--        </a-dropdown>-->
       </div>
       <!-- 表格区域 -->
-      <a-table :columns="columns"
+      <a-table ref="TableInfo"
+               :columns="columns"
                :dataSource="dataSource"
                :pagination="pagination"
                :loading="loading"
@@ -56,13 +57,13 @@
         </template>
       </a-table>
     </div>
-    <!-- 新增部门 -->
+    <!-- 新增区域 -->
     <company-add
       @success="handleCompanyAddSuccess"
       @close="handleCompanyAddClose"
       :companyAddVisiable="companyAddVisiable">
     </company-add>
-    <!-- 修改部门 -->
+    <!-- 修改区域 -->
     <company-edit
       ref="companyEdit"
       @success="handleCompanyEditSuccess"
@@ -86,10 +87,14 @@ export default {
       selectedRowKeys: [],
       queryParams: {},
       sortedInfo: null,
+      paginationInfo: null,
       pagination: {
-        defaultPageSize: 10000000,
-        hideOnSinglePage: true,
-        indentSize: 100
+        pageSizeOptions: ['10', '20', '30', '40', '100'],
+        defaultCurrent: 1,
+        defaultPageSize: 10,
+        showQuickJumper: true,
+        showSizeChanger: true,
+        showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`
       },
       loading: false,
       companyAddVisiable: false,
@@ -132,7 +137,7 @@ export default {
     },
     handleCompanyAddSuccess () {
       this.companyAddVisiable = false
-      this.$message.success('新增终端成功')
+      this.$message.success('新增区域成功')
       this.fetch()
     },
     add () {
@@ -143,7 +148,7 @@ export default {
     },
     handleCompanyEditSuccess () {
       this.companyEditVisiable = false
-      this.$message.success('修改终端成功')
+      this.$message.success('修改区域成功')
       this.fetch()
     },
     edit (record) {
@@ -188,6 +193,12 @@ export default {
       })
     },
     reset () {
+      // 重置分页
+      this.$refs.TableInfo.pagination.current = this.pagination.defaultCurrent
+      if (this.paginationInfo) {
+        this.paginationInfo.current = this.pagination.defaultCurrent
+        this.paginationInfo.pageSize = this.pagination.defaultPageSize
+      }
       // 取消选中
       this.selectedRowKeys = []
       // 重置列排序规则
@@ -199,6 +210,8 @@ export default {
       this.fetch()
     },
     handleTableChange (pagination, filters, sorter) {
+      // 将这三个参数赋值给Vue data，用于后续使用
+      this.paginationInfo = pagination
       this.sortedInfo = sorter
       this.fetch({
         sortField: sorter.field,
@@ -209,12 +222,26 @@ export default {
     },
     fetch (params = {}) {
       this.loading = true
+      if (this.paginationInfo) {
+        // 如果分页信息不为空，则设置表格当前第几页，每页条数，并设置查询分页参数
+        this.$refs.TableInfo.pagination.current = this.paginationInfo.current
+        this.$refs.TableInfo.pagination.pageSize = this.paginationInfo.pageSize
+        params.pageSize = this.paginationInfo.pageSize
+        params.pageNum = this.paginationInfo.current
+      } else {
+        // 如果分页信息为空，则设置为默认值
+        params.pageSize = this.pagination.defaultPageSize
+        params.pageNum = this.pagination.defaultCurrent
+      }
       this.$get('company', {
         ...params
       }).then((r) => {
         let data = r.data
         this.loading = false
         this.dataSource = data.rows.children
+        const pagination = { ...this.pagination }
+        pagination.total = data.total
+        this.pagination = pagination
       })
     }
   }

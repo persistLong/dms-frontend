@@ -18,12 +18,12 @@
         >
         </a-tree-select>
       </a-form-item>
-      <a-form-item label='组织' v-bind="formItemLayout">
+      <a-form-item label='区域' v-bind="formItemLayout">
         <a-tree-select
           :allowClear="true"
           :dropdownStyle="{ maxHeight: '220px', overflow: 'auto' }"
           :treeData="companyTreeData"
-          v-decorator="['companyId',{rules: [{ required: true, message: '组织不能为空'}]}]"
+          v-decorator="['companyId',{rules: [{ required: true, message: '区域不能为空'}]}]"
         >
         </a-tree-select>
       </a-form-item>
@@ -48,22 +48,22 @@
       <a-form-item label='位置' v-bind="formItemLayout">
         <a-input v-decorator="['location']"/>
       </a-form-item>
-      <a-form-item label='启用状态' v-bind="formItemLayout">
-        <a-radio-group
-          v-decorator="['status', {rules: [{ required: true, message: '请选择启用状态' }]}]"
-        >
-          <a-radio value="0">禁用</a-radio>
-          <a-radio value="1">启用</a-radio>
-        </a-radio-group>
-      </a-form-item>
-      <a-form-item label='运行状态' v-bind="formItemLayout">
-        <a-radio-group
-          v-decorator="['pause',{rules: [{ required: true, message: '请选择运行状态' }]}]"
-        >
-          <a-radio value="0">在线</a-radio>
-          <a-radio value="1">离线</a-radio>
-        </a-radio-group>
-      </a-form-item>
+      <!--<a-form-item label='启用状态' v-bind="formItemLayout">-->
+        <!--<a-radio-group-->
+          <!--v-decorator="['status', {rules: [{ required: true, message: '请选择启用状态' }]}]"-->
+        <!--&gt;-->
+          <!--<a-radio value="0">禁用</a-radio>-->
+          <!--<a-radio value="1">启用</a-radio>-->
+        <!--</a-radio-group>-->
+      <!--</a-form-item>-->
+      <!--<a-form-item label='运行状态' v-bind="formItemLayout">-->
+        <!--<a-radio-group-->
+          <!--v-decorator="['pause',{rules: [{ required: true, message: '请选择运行状态' }]}]"-->
+        <!--&gt;-->
+          <!--<a-radio value="0">在线</a-radio>-->
+          <!--<a-radio value="1">离线</a-radio>-->
+        <!--</a-radio-group>-->
+      <!--</a-form-item>-->
       <a-form-item label='负责人姓名' v-bind="formItemLayout">
         <a-input
           v-decorator="['leaderName', { rules: [ {required: true, message: '负责人姓名不能为空'}]}]"/>
@@ -165,6 +165,8 @@ export default {
       this.form.setFieldsValue({'longitudes': number.longitudes})
       this.form.getFieldDecorator('latitudes')
       this.form.setFieldsValue({'latitudes': number.latitudes})
+      this.form.getFieldDecorator('location')
+      this.form.setFieldsValue({'location': number.location})
       this.form.getFieldDecorator('leaderPhone')
       this.form.setFieldsValue({'leaderPhone': number.leaderPhone})
       this.form.getFieldDecorator('leaderName')

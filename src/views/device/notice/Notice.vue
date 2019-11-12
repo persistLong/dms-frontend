@@ -1,29 +1,9 @@
 <template>
   <a-card :bordered="false" class="card-area">
-    <div :class="advanced ? 'search' : null">
-      <!-- 搜索区域 -->
-      <a-form layout="horizontal">
-        <div :class="advanced ? null: 'fold'">
-          <a-row >
-            <a-col :md="12" :sm="24" >
-              <a-form-item
-                label="编号"
-                :labelCol="{span: 5}"
-                :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.code"/>
-              </a-form-item>
-            </a-col>
-            <span style="float: right; margin-top: 3px;">
-              <a-button type="primary" @click="search">查询</a-button>
-              <a-button style="margin-left: 8px" @click="reset">重置</a-button>
-            </span>
-          </a-row>
-        </div>
-      </a-form>
-    </div>
     <div>
       <div class="operator" >
-        <a-button v-hasPermission="'hitch:delete'" @click="batchDelete">删除</a-button>
+        <a-button v-hasPermission="'notice:add'" type="primary" ghost @click="add">新增</a-button>
+        <a-button v-hasPermission="'notice:delete'" @click="batchDelete">删除</a-button>
       </div>
       <!-- 表格区域 -->
       <a-table ref="TableInfo"
@@ -36,14 +16,28 @@
                @change="handleTableChange">
       </a-table>
     </div>
+    <!-- 新增区域 -->
+    <notice-add
+      @success="handleNoticeAddSuccess"
+      @close="handleNoticeAddClose"
+      :noticeAddVisiable="noticeAddVisiable">
+    </notice-add>
+    <notice-edit
+      ref="noticeEdit"
+      @success="handleNoticeEditSuccess"
+      @close="handleNoticeEditClose"
+      :noticeEditVisiable="noticeEditVisiable">
+    </notice-edit>
   </a-card>
 </template>
 
 <script>
+import NoticeAdd from './NoticeAdd'
+import NoticeEdit from './NoticeEdit'
 import RangeDate from '@/components/datetime/RangeDate'
 export default {
-  name: 'Hitch',
-  components: {RangeDate},
+  name: 'Notice',
+  components: {NoticeAdd, NoticeEdit, RangeDate},
   data () {
     return {
       advanced: false,
@@ -60,7 +54,9 @@ export default {
         showSizeChanger: true,
         showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`
       },
-      loading: false
+      loading: false,
+      noticeAddVisiable: false,
+      noticeEditVisiable: false
     }
   },
   computed: {
@@ -68,21 +64,18 @@ export default {
       let {sortedInfo} = this
       sortedInfo = sortedInfo || {}
       return [{
-        title: '设备编号',
-        dataIndex: 'code'
+        title: '序号',
+        dataIndex: 'noticeId'
       }, {
-        title: '故障类型',
-        dataIndex: 'type'
-      }, {
-        title: '故障描述',
-        dataIndex: 'hitchDesc'
+        title: '公告描述',
+        dataIndex: 'noticeDesc'
       }, {
         title: '创建时间',
         dataIndex: 'createTime',
         sorter: true,
         sortOrder: sortedInfo.columnKey === 'createTime' && sortedInfo.order
       }, {
-        title: '查看',
+        title: '操作',
         dataIndex: 'operation',
         scopedSlots: {customRender: 'operation'},
         fixed: 'right',
@@ -97,6 +90,29 @@ export default {
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },
+    handleNoticeAddClose () {
+      this.noticeAddVisiable = false
+    },
+    handleNoticeAddSuccess () {
+      this.noticeAddVisiable = false
+      this.$message.success('新增公告成功')
+      this.fetch()
+    },
+    add () {
+      this.noticeAddVisiable = true
+    },
+    handleNoticeEditClose () {
+      this.noticeEditVisiable = false
+    },
+    handleNoticeEditSuccess () {
+      this.noticeEditVisiable = false
+      this.$message.success('修改终端成功')
+      this.fetch()
+    },
+    edit (record) {
+      this.noticeEditVisiable = true
+      this.$refs.noticeEdit.setFormValues(record)
+    },
     batchDelete () {
       if (!this.selectedRowKeys.length) {
         this.$message.warning('请选择需要删除的记录')
@@ -108,7 +124,7 @@ export default {
         content: '当您点击确定按钮后，这些记录将会被彻底删除，如果其包含子记录，也将一并删除！',
         centered: true,
         onOk () {
-          that.$delete('hitch/' + that.selectedRowKeys.join(',')).then(() => {
+          that.$delete('notice/' + that.selectedRowKeys.join(',')).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.fetch()
@@ -134,7 +150,6 @@ export default {
       })
     },
     reset () {
-      // 重置分页
       this.$refs.TableInfo.pagination.current = this.pagination.defaultCurrent
       if (this.paginationInfo) {
         this.paginationInfo.current = this.pagination.defaultCurrent
@@ -173,7 +188,7 @@ export default {
         params.pageSize = this.pagination.defaultPageSize
         params.pageNum = this.pagination.defaultCurrent
       }
-      this.$get('hitch', {
+      this.$get('notice', {
         ...params
       }).then((r) => {
         let data = r.data
